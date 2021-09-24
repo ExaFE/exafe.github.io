@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YouTube Rotate Viewer</title>
+    <meta name="description" content="Rotate Landscape YouTube To Portait ">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://exafe.github.io/assets/exafe-logo-114.ico" />
+    <link rel="shortcut icon" href="https://exafe.github.io/assets/exafe-logo-114.png" />    
+    <link rel="apple-touch-icon" href="https://exafe.github.io/assets/exafe-logo-72.png" />
+  </head>
+  <body> 
+    <style>
+      body {
+        margin: 0;
+      }
+      .main, .sub {
+        position: absolute;
+      }
+      a {
+        text-decoration: none;
+        color: black;
+        display: block;
+      }
+    </style>
+    <div class="main">
+      <div class="sub holder">
+        <iframe class="content" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+      <div class="sub" width="100">
+        <a href="http://lucablaq.com/index.php?mid=board_iuVb40&document_srl=201" target="about: black;" title="How to use">H</a>
+        <a href="javascript:void(0);" class="btnRotate" style="user-select: none;" title="Rotate">R</a>
+        <a href="javascript:void(0);" style="user-select: none;" title="contact: lucablaq@oddnori.com">C</a>
+      </div>  
+      <div class="toolbar" style="display: none;">
+        
+  <!--       <button class="btnFullscreen">Fullscreen</button> -->
+        YouTube URL : <input id="inputURL" /> <input type="button" id="buttonNavTitle" value="Move" />
+      </div>
+    </div>    
+    
+    <script>
+      var inputURL = getDom("#inputURL");
+      var buttonNavTitle = getDom("#buttonNavTitle");
+      var btnRotate = getDom(".btnRotate");
+      var btnFullscreen = getDom(".btnFullscreen");
+      var elHolder = getDom(".holder");
+      var elContent = getDom(".content");
+     
+      buttonNavTitle.addEventListener('enter', buttonNavTitleEnterHandler);
+      attachClick(buttonNavTitle, buttonNavTitleClickHandler);
+      attachClick(btnRotate, onClickBtnRotate);
+      
+      
+      var renderOption = {};
+      ready();
+      render();
+      
+      
+      function ready() {
+        var initOption = {
+          "ROTATE" : 0,
+          "URL" : "",
+          "SHOW_CONTROL_BAR" : false,
+          "SIZE" : 640
+        };
+        
+        var params = getParams();
+        clog('params', params);
+        
+        if ( params ) {
+          if ( params.r ) {
+            var orderR = params.r.toLowerCase();
+            var orderMapR = {
+              "u" : 0,
+              "r" : 90,
+              "d" : 180,
+              "l" : 270,
+            };            
+            if ( orderMapR[ orderR ] ) {
+              initOption.ROTATE = orderMapR[ orderR ];
+            }
+          }
+          
+          if (params.u) {
+            initOption.URL = params.u;
+          }
+          
+          if ( params.s ) {
+            var size = params.s;
+            size = Number(size);
+            if ( !size ) {
+              size = initOption.SIZE;
+            }
+            initOption.SIZE = size;
+          }
+        }
+        
+        clog("init option: ", initOption );
+        renderOption = initOption;
+      }
+      
+      function render() {
+        if ( renderOption.URL ) {
+          showYouTube(renderOption.URL);
+        }
+        
+        updatePlayerStyle();
+      }
+      
+      
+      
+      
+      function getUrl() {
+        var url = location.origin + location.pathname;
+        return url;
+      }
+      function getTitleFromUrl() {
+        var title = "";
+        var params = getParamas();
+        if ( params ) {
+          title = params.title;
+        }        
+        return title;
+      }
+      function getParams() {
+        var params = undefined;
+        var search = location.search.substring(1);
+        if ( search ) {
+          // params = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');  
+          params = search.split("&").reduce((acc, val)=>{
+            var qKey = val.substring(0,1);
+            var qValue = val.substring(2);
+            acc[qKey] = qValue;
+            return acc;
+          }, {});
+        }
+        return params
+      }
+      
+      function navTitle(title) {
+        var urlWithTitle = getUrl() + "?title=" + title;
+        location.href = urlWithTitle;
+      }
+      
+      
+      function inputChangeTitleChangeHandler(event) {
+        var title = inputChangeTitle.value;
+        navTitle( title );
+      }
+      function inputChangeTitleKeyDownHandler(event) {
+        var KEY = {ENTER: 13};
+        var which = event.which || event.keyCode;
+        if ( which == KEY.ENTER ) {
+          var title = inputChangeTitle.value;
+          navTitle( title ); 
+        }
+      }
+      
+      
+      
+      
+      
+      function buttonNavTitleClickHandler(event) {
+        var url = inputURL.value;
+        showYouTube( url );
+      }
+      function buttonNavTitleEnterHandler(event) {
+        var url = inputURL.value;
+        showYouTube( url );
+      }
+      function showYouTube(url) {
+        // url : https://www.youtube.com/watch?v=s2Ur74vVZPM
+        // share url : https://youtu.be/dGqQOmykbLE
+        // embed url : https://www.youtube.com/embed/dGqQOmykbLE
+        // key: dGqQOmykbLE
+        
+        var units = url.split('/');
+        var key = units.pop();
+        if ( key.indexOf("=") > -1 ) {
+          key = key.split("=").pop();
+        }
+          
+        https://www.youtube.com/watch?v=s2Ur74vVZPM
+        url = 'https://www.youtube.com/embed/' + key;
+        
+        elContent.src = url;
+      }
+
+      function onClickBtnRotate() {        
+        renderOption.ROTATE += 90;
+        updatePlayerStyle();
+      }
+      function updatePlayerStyle() {
+        
+        // Size 
+        var size = renderOption.SIZE;
+        
+        var width = size;
+        elContent.style.width = width + 'px';
+        
+        var height = size;
+        height = height / 16 * 9;
+        // height = parseInt(height, 10);
+        elContent.style.height = height + 'px'
+        clog('w: ', width, 'h: ', height);
+        
+        // Trnasform 
+        var transformList = [];
+        
+        var yOffset = width * 0.5 - height * 0.5;
+        // yOffset = parseInt(yOffset, 10);
+        transformList.push('translate(0px, ' + yOffset + 'px)');
+        
+        var degree = renderOption.ROTATE;
+        transformList.push('rotateZ(' + degree + 'deg)');   
+        
+        var transform = transformList.join(' ');
+        clog('transform: ', transform);
+        elContent.style.transform = transform;
+        
+        clog('elHolder: ', elHolder);
+        elHolder.style.width = width + 'px'
+        elHolder.style.height = width + 'px'
+      }
+
+      function onClickBtnFullscreen(){
+        // clog('[btnFullscreen] click() ');
+        openFullscreen(elHolder[0]);
+      }
+      function openFullscreen(elem) {
+        // clog('[openFullscreen]');
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+          elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+          elem.msRequestFullscreen();
+        }
+      }  
+      
+      
+      
+      /*
+       *
+       * Raw Utils
+       *
+       */
+      
+      function getDom(selector) {
+        return document.querySelector(selector);
+      }
+      
+      function attachClick(dom, fn) {
+        dom.addEventListener('click', fn);
+      }
+      
+      function setDomInnerHtml(dom, title) {
+        dom.value = title;
+      }
+      function setTitle(title) {
+        document.title = title;
+      }
+      
+      function clog(...args) {
+        // console.log(...args)
+      }
+    </script>
+  </body>
+</html>
