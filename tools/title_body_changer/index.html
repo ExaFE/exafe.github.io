@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title & Body Changer</title>
+    <meta name="description" content="Change browser title">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://exafe.github.io/assets/exafe-logo-114.ico" />
+    <link rel="shortcut icon" href="https://exafe.github.io/assets/exafe-logo-114.png" />    
+    <link rel="apple-touch-icon" href="https://exafe.github.io/assets/exafe-logo-72.png" />
+  </head>
+  <body>
+    <div>
+      Text: <input id="inputChangeTitle" /> 
+      FontSize: <input id="inputChangeFontSize" type="number" min='10' max='1000' step="10" value="333" /> 
+      ShowBody: <input type="checkbox" id="checkDisplayBody" />
+      <input type="button" id="buttonUpdate" value="Update" />
+    </div>
+    
+    <div id="content" />
+    
+    <script>
+      var inputChangeTitle = document.querySelector("#inputChangeTitle");
+      var inputChangeFontSize = document.querySelector("#inputChangeFontSize");
+      inputChangeTitle.addEventListener('change', inputChangeTitleChangeHandler);
+      inputChangeTitle.addEventListener('keydown', inputChangeTitleKeyDownHandler);
+      // inputChangeFontSize.addEventListener('change', inputChangeFontSizeChangeHandler);
+      // inputChangeFontSize.addEventListener('keydown', inputChangeFontSizeKeyDownHandler);
+
+      var checkDisplayBody = document.querySelector("#checkDisplayBody");
+      checkDisplayBody.addEventListener('change', checkDisplayBodyChangeHandler);
+
+      var buttonUpdate = document.querySelector("#buttonUpdate");
+      buttonUpdate.addEventListener('click', buttonUpdateClickHandler);
+      buttonUpdate.addEventListener('enter', buttonUpdateEnterHandler);
+
+      function inputChangeTitleChangeHandler(event) {
+        updateValue();
+      }
+      function inputChangeTitleKeyDownHandler(event) {
+        var KEY = {ENTER: 13};
+        var which = event.which || event.keyCode;
+        if ( which == KEY.ENTER ) {
+          updateValue();
+        }
+      }
+
+      // function inputChangeFontSizeChangeHandler(event) {
+      //   updateValue();
+      // }
+      // function inputChangeFontSizeKeyDownHandler(event) {
+      //   var KEY = {ENTER: 13};
+      //   var which = event.which || event.keyCode;
+      //   if ( which == KEY.ENTER ) {
+      //     updateValue();
+      //   }
+      // }
+
+      function checkDisplayBodyChangeHandler(event) {
+        // alert(checkDisplayBody.checked)
+        updateValue();
+      }
+
+      function buttonUpdateClickHandler(event) {
+        updateValue();
+      }
+      function buttonUpdateEnterHandler(event) {
+        updateValue();
+      }
+      
+      
+      // Move to url 
+      function updateValue() {
+        var params = [];
+
+        var paramText = "text=" + getText();
+        var paramFontSize = "font_size=" + getFontSize();
+
+        var showBody = checkDisplayBody.checked;
+        var paramShowBody = 'show_body=' + showBody;
+        if ( showBody ) {
+          params.push(paramShowBody);
+          params.push(paramFontSize);
+        }
+        params.push(paramText);
+        
+        var urlWithTitle = getUrl() + "?" + params.join('&');
+        location.href = urlWithTitle;
+      }
+      function getText() {
+        return inputChangeTitle.value;
+      }
+      function getFontSize() {
+        return inputChangeFontSize.value;
+      }
+      
+      
+      // Initialize
+      var elText = document.querySelector("#content");
+      // setDomInnerHtml( inputChangeTitle, "Change Your title" );
+      // setFontSize(getFontSize());
+
+      var params = getParamsFromUrl();
+      if ( params ) {
+        // alert(params)
+        var text = params.text;
+        setTitleText(text);
+        setDomInnerHtml( inputChangeTitle, text );
+        
+        
+        var showBody = params.show_body === 'true';
+        if ( showBody ) {
+          var fontSize = params.font_size;
+          setFontSize(fontSize);
+          setDomInnerHtml( inputChangeFontSize, fontSize  );
+
+          checkDisplayBody.checked = true;
+        }
+        setShowBody(showBody)
+      }
+      
+      setTimeout(function() {
+        inputChangeTitle.focus();
+      }, 10);
+      
+      function getUrl() {
+        var url = location.origin + location.pathname;
+        return url;
+      }
+      function getParamsFromUrl() {
+        var title = "";
+        var search = location.search.substring(1);
+        if ( search ) {
+          var params = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');  
+          return params;
+        }        
+        return null;
+      }
+      
+      
+      
+      
+
+      
+      
+      function setDomInnerHtml(dom, text) {
+        dom.value = text;
+      }
+      function setTitleText(text) {
+        document.title = text;
+      }
+      function setBodyText(text) {
+        elText.innerHTML = text;
+      }
+      function setShowBody(visible) {
+        if ( visible ) {
+          setBodyText(getText());
+        } else {
+          setBodyText('');
+        }
+      }
+      function setFontSize(fontSize) {
+        // alert(fontSize)
+        // alert(fontSize + 'pt;')
+        elText.style.fontSize = fontSize + 'pt'
+      }
+    </script>
+  </body>
+</html>
