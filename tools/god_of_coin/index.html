@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>동전의 신, Coin Flip! (by ExaFE)</title>
+    <meta name="description" content="Flip a Coin. God of Coin" />   
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />   
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-114.ico" />
+    <link rel="shortcut icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-114.png" />    
+    <link rel="apple-touch-icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-72.png" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+      .app {
+        width: 100%;
+        height: 100%;
+        background-color: grey;
+
+        user-select: none;
+      }
+      .header {
+        padding: 10px;
+      }
+      .title {
+        padding-top: 10px;
+        color: white;
+        text-align: center;
+      }
+      .dashboard {
+        margin-top: 10px;
+        padding-top: 10px;
+        padding-bottom: 15px;
+        color: white;
+        border: solid 1px white;
+        text-align: center;
+        
+        visibility: hidden;
+      }
+    </style>
+    <style>
+      .coin {
+        width: 100px;
+        height: 100px;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .coin-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .coin-side {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50%;        
+
+        font-size: 40px;
+      }
+      .question {
+        background: white;
+        border: solid 10px black;
+        --glow-color: white;
+      }
+      .front {
+        background: white;
+        border: solid 10px blue;
+        --glow-color: lightblue;
+      }
+      .back {
+        background: white;
+        border: solid 10px red;
+        --glow-color: pink;
+      }
+      .content {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+    <style>
+      .animation-init {
+        opacity: 0;
+      }
+      .animation-fade {
+        opacity: 1;
+        transition: all 1s;
+        animation: glow 1s 2 alternate;
+      }
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 10px -10px var(--glow-color);
+        }
+        to {
+          box-shadow: 0 0 10px 10px var(--glow-color);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">        
+        <div class="title">
+          <p>
+            Flip coin
+          </p>
+          <p>
+            God of coin
+          </p>
+        </div>
+        <div class="dashboard">
+          <p>
+            Yes : <span class="score yes">0</span>
+          </p>
+          <p>
+            No : <span class="score no">0</span>
+          </p>
+        </div>
+      </div>
+      <div class="coin">
+        <div class="coin-inner">
+          <div class="coin-side question">
+            <p class="content">
+              ❔
+            </p>
+          </div>
+          <div class="coin-side front">
+            <p class="content">
+              YES
+            </p>
+          </div>
+          <div class="coin-side back">
+            <p class="content">
+              NO
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Library -->
+    <script>
+      function getEl(selector) {
+        return document.querySelector(selector);
+      }
+      function getRandom() {
+        return Math.random();
+      }
+      function getDateTime() {
+        return new Date().getTime();
+      }
+      function getRandomBoolean() {
+        var seed = 0;
+        seed += getRandom() * 2;
+        seed += getRandom() * 10;
+        seed += getDateTime();
+        return Math.ceil(seed) % 2 === 0;
+      }
+
+      function removeEl(el) {
+        el && el.parentElement && el.parentElement.removeChild(el)
+      }
+      function addEl(parent, child) {
+        parent && child && parent.appendChild(child)
+      }
+    </script>
+
+    <!-- App -->
+    <script>
+      // var coin = getEl('.coin')
+      // console.log('script >', coin)
+      var inner = getEl('.coin-inner');
+      var front = getEl(".front");
+      var back = getEl(".back");
+      var question = getEl(".question");
+      
+      var stateAnswer = false;
+      
+      var scoreYes = 0
+      var scoreNo = 0
+      var elDashboard = getEl('.dashboard')      
+      var elYes = getEl('.score.yes')
+      var elNo = getEl('.score.no')
+     
+      showQuestion()
+
+      function showCoinFront() {
+        hideAll()
+        addEl(inner, front)
+        goAnim(front)
+        elDashboard.style.visibility = 'visible';
+        scoreYes += 1
+        elYes.innerHTML = scoreYes;
+        stateAnswer = true;
+      }
+      function showCoinBack() {
+        hideAll()
+        addEl(inner, back)
+        goAnim(back)
+        elDashboard.style.visibility = 'visible';
+        scoreNo += 1
+        elNo.innerHTML = scoreNo;
+        stateAnswer = true;
+      }
+      function showQuestion() {
+        hideAll()
+        addEl(inner, question)
+        goAnim(question)
+      }
+      function hideAll() {
+        removeEl(front)
+        removeEl(back)
+        removeEl(question)
+      }
+      
+      function goAnim(el) {
+        el.classList.add("animation-init");
+        setTimeout(function () {
+          el.classList.add("animation-fade");
+        }, 30);
+      }
+
+      function onClickDocument() {
+        var answer = getRandomBoolean();
+        console.log("document.onClick answer", answer);
+        if (stateAnswer) {
+          showQuestion()
+          stateAnswer = false
+          return
+        }
+        if (answer) showCoinFront();
+        else showCoinBack();
+      }
+      document.addEventListener("click", onClickDocument);
+    </script>
+  </body>
+</html>
