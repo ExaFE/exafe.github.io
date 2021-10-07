@@ -2,12 +2,12 @@
 <html>
   <head>
     <title>동전의 신, Coin Flip! (by ExaFE)</title>
-    <meta name="description" content="Flip a Coin. God of Coin" />   
+    <meta name="description" content="Flip a Coin. God of Coin" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />   
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link id="favicon" rel="icon" type="image/x-icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-114.ico" />
-    <link rel="shortcut icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-114.png" />    
+    <link rel="shortcut icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-114.png" />
     <link rel="apple-touch-icon" href="https://exafe.github.io/assets/tools/god_of_coin/god_of_coin-favicon-72.png" />
 
     <style>
@@ -43,7 +43,7 @@
         color: white;
         border: solid 1px white;
         text-align: center;
-        
+
         visibility: hidden;
       }
     </style>
@@ -67,7 +67,7 @@
         width: 100%;
         height: 100%;
 
-        border-radius: 50%;        
+        border-radius: 50%;
 
         font-size: 40px;
       }
@@ -115,7 +115,7 @@
   </head>
   <body>
     <div class="app">
-      <div class="header">        
+      <div class="header">
         <div class="title">
           <p>
             Flip coin
@@ -166,11 +166,16 @@
         return new Date().getTime();
       }
       function getRandomBoolean() {
-        var seed = 0;
-        seed += getRandom() * 2;
-        seed += getRandom() * 10;
-        seed += getDateTime();
-        return Math.ceil(seed) % 2 === 0;
+        let result = true;
+        const time = getRandom() * 10
+        while (time > 0) {
+          time--;
+          result = !result
+        }
+        return result
+        // var seed = 0;
+        // seed += getRandom() * 2;
+        // return Math.ceil(seed) % 2 === 0;
       }
 
       function removeEl(el) {
@@ -189,15 +194,15 @@
       var front = getEl(".front");
       var back = getEl(".back");
       var question = getEl(".question");
-      
+
       var stateAnswer = false;
-      
+
       var scoreYes = 0
       var scoreNo = 0
-      var elDashboard = getEl('.dashboard')      
+      var elDashboard = getEl('.dashboard')
       var elYes = getEl('.score.yes')
       var elNo = getEl('.score.no')
-     
+
       showQuestion()
 
       function showCoinFront() {
@@ -228,7 +233,7 @@
         removeEl(back)
         removeEl(question)
       }
-      
+
       function goAnim(el) {
         el.classList.add("animation-init");
         setTimeout(function () {
