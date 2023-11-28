@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <title>Awake Screen (Video)</title>  
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: gray;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        display: none;
+      }
+      video {
+        width: 100vw;
+/*         height: 100vw; */
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <video
+       id="screen"
+       width="100%" height="100%"
+      playsinline autoplay muted 
+    ></video>
+    <canvas></canvas>
+    <script>
+      window.onload = function() {
+        const video = document.getElementById('screen')
+        
+        const canvas = document.querySelector('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        function randomColor(fx) {
+          return Math.floor(Math.random() * 256 * fx)
+        }
+        function randomRgb() {
+          const n = 10
+          const rgb = 128 - Math.floor(Math.random() * n) - (n/2)
+          return `rgb(${rgb},${rgb},${rgb})`
+        }
+        function draw() {
+          ctx.fillStyle = randomRgb();
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        setInterval(draw, 1000)
+        
+        const stream = canvas.captureStream();
+        video.srcObject = stream;
+        
+        function refresh() {
+          window.location.reload();
+        }
+        setInterval(refresh, 1800000);
+      }
+    </script>
+  </body>
+</html>
