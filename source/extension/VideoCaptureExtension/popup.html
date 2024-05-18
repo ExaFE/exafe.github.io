@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Capture Extension v1.0</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Video Capture Extension <span>v1.0</span></h1>
+    </header>
+    <div class="capture-section">
+      <div id="capturedImageContainer">
+        <img id="capturedImage" src="" alt="Captured Image" />
+        <div id="placeholder">Capturing...</div>
+      </div>
+      <div id="videoControl">
+        <button id="restartButton">|&lt;&lt;</button>
+        <button id="playPauseButton">Play</button>
+        <button id="prevButton">&lt; 0.5s</button>
+        <button id="nextButton">0.5s &gt;</button>
+        <div id="videoTime">
+          <span id="currentTime">00:00:00.00</span> / <span id="duration">00:00:00.00</span>
+        </div>
+      </div>
+    </div>
+    <div class="group snapshot-group">
+      <button id="popupImage">Popup Snapshot</button>
+      <button id="downloadImage">Download Snapshot</button>
+    </div>
+    <div class="group all-snapshot-group">
+      <button id="startBackup">Start Backup</button>
+      <span id="progressPlaceholder">백업중 0 / 0 (0%)</span>
+      <button id="downloadAll" disabled>Download All</button>
+    </div>
+    <div id="progressContainer"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
