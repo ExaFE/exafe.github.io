@@ -1,0 +1,134 @@
+# ExaFE 프로젝트 - Cursor AI 작업 규칙
+
+## 프로젝트 개요
+- **프로젝트명**: ExaFE (Exa Frontend)
+- **목적**: 실용적인 웹 도구 모음집
+- **개발자**: imincheol+exafe1009@gmail.com
+- **YouTube**: https://www.youtube.com/@exa1009
+- **배포**: GitHub Pages (https://exafe.github.io/)
+
+## 폴더 구조 규칙
+
+### 도구 관리 원칙
+- 각 도구는 `tools/도구명/` 폴더에 독립적으로 관리
+- 필수 파일: `index.html` (실행), `guide.html` (가이드)
+- 가이드는 각 도구 폴더 내에 위치 (NOT in docs/)
+
+### 경로 구조
+```
+tools/
+├── god_of_coin/
+│   ├── index.html      # 도구 실행
+│   └── guide.html      # 사용 가이드
+├── title_body_changer/
+│   ├── index.html
+│   └── guide.html
+├── youtube_rotate_viewer/
+│   ├── index.html
+│   └── guide.html
+└── screen-saver-video/
+    ├── index.html
+    └── guide.html
+```
+
+## 개발 규칙
+
+### 1. HTML 구조
+- 바닐라 자바스크립트 사용 (외부 라이브러리 최소화)
+- 시맨틱 HTML 필수
+- 반응형 디자인 필수
+- 다크 모드 지원 필수
+
+### 2. CSS 스타일
+- 인라인 스타일 사용 (단일 파일로 관리)
+- 색상 테마: #3498db (파란색), #27ae60 (초록색), #f39c12 (주황색), #e74c3c (빨간색)
+- 폰트: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif
+
+### 3. 상대 경로 사용
+- 절대 경로 사용 금지
+- 가이드 페이지에서 메인: `../../`
+- 가이드 페이지에서 도구: `./`
+- 파비콘: `../../assets/exafe-logo-114.ico`
+
+### 4. 필수 메타데이터
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../assets/exafe-logo-114.ico">
+<meta name="description" content="...">
+```
+
+## 코딩 스타일
+
+### JavaScript
+- ES6+ 문법 사용
+- 함수형 프로그래밍 지향
+- 에러 처리 및 사용자 피드백 필수
+- 접근성 고려 (키보드 네비게이션, ARIA 레이블)
+
+### 예시 코드
+```javascript
+// 에러 처리 예시
+function validateInput(value) {
+    if (!value) {
+        showError('입력값이 필요합니다.');
+        return false;
+    }
+    return true;
+}
+
+// 사용자 피드백 예시
+function showSuccess(message) {
+    const successEl = document.querySelector('#successMessage');
+    successEl.textContent = message;
+    successEl.style.display = 'block';
+    
+    setTimeout(() => {
+        successEl.style.display = 'none';
+    }, 2000);
+}
+```
+
+## 가이드 페이지 구조
+
+### 필수 섹션
+1. **사용방법** (📋): 단계별 사용법
+2. **주요 기능** (✨): 핵심 기능 설명
+3. **사용 예시** (🎯): 실제 사용 사례
+4. **활용 팁** (💡): 유용한 팁들
+5. **주의사항** (⚠️): 사용 시 주의점
+6. **기술 정보** (🔧): 작동 원리
+
+### 필수 링크
+```html
+<a href="../../" class="back-link">← 메인으로 돌아가기</a>
+<a href="./" class="btn">도구 실행하기</a>
+```
+
+## 새 도구 추가 시 체크리스트
+
+1. [ ] `tools/도구명/` 폴더 생성
+2. [ ] `index.html` 파일 생성 (도구 실행 페이지)
+3. [ ] `guide.html` 파일 생성 (사용 가이드)
+4. [ ] 메인 페이지에 도구 소개 추가
+5. [ ] 상대 경로 확인
+6. [ ] 다크 모드 지원 확인
+7. [ ] 반응형 디자인 확인
+8. [ ] 접근성 확인
+9. [ ] 에러 처리 확인
+
+## 금지 사항
+
+- 절대 경로 사용 금지
+- docs/ 폴더에 가이드 생성 금지
+- 외부 라이브러리 무분별한 사용 금지
+- 하드코딩된 도메인 사용 금지
+
+## 우선순위
+
+1. **사용자 경험** - 직관적이고 사용하기 쉬운 인터페이스
+2. **접근성** - 모든 사용자가 사용할 수 있도록
+3. **성능** - 빠른 로딩과 반응성
+4. **호환성** - 모든 브라우저에서 동작
+5. **유지보수성** - 깔끔하고 이해하기 쉬운 코드
+
+이 규칙을 따라 ExaFE 프로젝트의 일관성과 품질을 유지하세요. 

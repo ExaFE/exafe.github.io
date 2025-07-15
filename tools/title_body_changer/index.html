@@ -2,46 +2,629 @@
 <html>
   <head>
     <title>Title & Body Changer</title>
-    <meta name="description" content="Change browser title">
+    <meta name="description" content="Change browser title and display custom text">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link id="favicon" rel="icon" type="image/x-icon" href="https://exafe.github.io/assets/exafe-logo-114.ico" />
-    <link rel="shortcut icon" href="https://exafe.github.io/assets/exafe-logo-114.png" />    
-    <link rel="apple-touch-icon" href="https://exafe.github.io/assets/exafe-logo-72.png" />
+    <link id="favicon" rel="icon" type="image/x-icon" href="../../assets/exafe-logo-114.ico" />
+    <link rel="shortcut icon" href="../../assets/exafe-logo-114.png" />    
+    <link rel="apple-touch-icon" href="../../assets/exafe-logo-72.png" />
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      html, body {
+        width: 100%;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+      
+      .app {
+        width: 100%;
+        min-height: 100vh;
+        background: linear-gradient(135deg, 
+          #667eea 0%, 
+          #764ba2 25%, 
+          #f093fb 50%, 
+          #f5576c 75%, 
+          #4facfe 100%);
+        background-size: 300% 300%;
+        animation: gradientShift 15s ease infinite;
+        position: relative;
+        overflow-x: hidden;
+        padding: 20px;
+      }
+      
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.25) 0%, 
+          rgba(255, 255, 255, 0.1) 100%);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 
+          0 20px 60px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      
+      .container:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+          0 30px 80px rgba(0, 0, 0, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      }
+      
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .header h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #fff, #f0f0f0, #fff);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleShine 3s ease-in-out infinite;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      
+      .header p {
+        font-size: 1.2rem;
+        color: white;
+        opacity: 0.9;
+        font-weight: 400;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      @keyframes titleShine {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      .form-section {
+        display: grid;
+        gap: 25px;
+        margin-bottom: 35px;
+      }
+      
+      .form-group {
+        position: relative;
+      }
+      
+      .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: white;
+        font-size: 1.1rem;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      .input-wrapper {
+        position: relative;
+      }
+      
+      .form-group input[type="text"], 
+      .form-group input[type="number"] {
+        width: 100%;
+        padding: 18px 24px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-weight: 500;
+      }
+      
+      .form-group input[type="text"]::placeholder,
+      .form-group input[type="number"]::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      
+      .form-group input[type="text"]:focus, 
+      .form-group input[type="number"]:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 
+          0 10px 30px rgba(0, 0, 0, 0.1),
+          0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      
+      .unit {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        font-weight: 500;
+        pointer-events: none;
+      }
+      
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px 25px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      
+      .checkbox-group:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+      
+      .checkbox-group input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        accent-color: #fff;
+      }
+      
+      .checkbox-group label {
+        margin-bottom: 0;
+        cursor: pointer;
+        font-size: 1.1rem;
+        color: white;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      .button-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 30px;
+      }
+      
+      .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+        min-width: 140px;
+      }
+      
+      .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+          transparent, 
+          rgba(255, 255, 255, 0.3), 
+          transparent);
+        transition: left 0.5s ease;
+      }
+      
+      .btn:hover::before {
+        left: 100%;
+      }
+      
+      .btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 
+          0 10px 30px rgba(0, 0, 0, 0.2),
+          0 0 25px rgba(255, 255, 255, 0.1);
+      }
+      
+      .btn:active {
+        transform: translateY(-1px) scale(1.02);
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .btn-info {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .preview-section {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(15px);
+        margin-top: 30px;
+        transition: all 0.3s ease;
+      }
+      
+      .preview-section:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+      
+      .preview-section h3 {
+        margin: 0 0 20px 0;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      .preview-item {
+        margin-bottom: 15px;
+        padding: 15px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      
+      .preview-label {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        min-width: 120px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      .preview-value {
+        color: white;
+        font-weight: 500;
+        flex: 1;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      #content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        pointer-events: none;
+        color: white;
+        font-weight: bold;
+        text-shadow: 
+          2px 2px 4px rgba(0, 0, 0, 0.8),
+          -1px -1px 2px rgba(0, 0, 0, 0.8),
+          1px -1px 2px rgba(0, 0, 0, 0.8),
+          -1px 1px 2px rgba(0, 0, 0, 0.8);
+        white-space: nowrap;
+        overflow: hidden;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      
+      #content.active {
+        display: flex;
+        background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(2px);
+      }
+      
+      .text-display {
+        max-width: 90vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background: linear-gradient(135deg, 
+          rgba(0, 0, 0, 0.7) 0%, 
+          rgba(0, 0, 0, 0.5) 50%, 
+          rgba(0, 0, 0, 0.7) 100%);
+        padding: 30px 40px;
+        border-radius: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 
+          0 20px 40px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+      
       @media (prefers-color-scheme: dark) {
-         html, body {
-            background: black;
-            color: white;
+        .app {
+          background: linear-gradient(135deg, 
+            #1a1a2e 0%, 
+            #16213e 25%, 
+            #0f3460 50%, 
+            #533483 75%, 
+            #7209b7 100%);
+          background-size: 300% 300%;
+          animation: gradientShift 20s ease infinite;
         }
+        
+        .container {
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15) 0%, 
+            rgba(255, 255, 255, 0.05) 100%);
+        }
+        
+        .form-group input[type="text"], 
+        .form-group input[type="number"] {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+        
+        .form-group input[type="text"]:focus, 
+        .form-group input[type="number"]:focus {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .checkbox-group {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .checkbox-group:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .preview-section {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .preview-section:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .preview-item {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .app {
+          padding: 15px;
+        }
+        
+        .container {
+          padding: 25px;
+        }
+        
+        .header h1 {
+          font-size: 2.2rem;
+        }
+        
+        .header p {
+          font-size: 1rem;
+        }
+        
+        .form-group input[type="text"], 
+        .form-group input[type="number"] {
+          padding: 15px 20px;
+          font-size: 15px;
+        }
+        
+        .checkbox-group {
+          padding: 15px 20px;
+        }
+        
+        .button-group {
+          gap: 10px;
+        }
+        
+        .btn {
+          padding: 12px 24px;
+          font-size: 15px;
+          min-width: 120px;
+        }
+        
+        .preview-section {
+          padding: 20px;
+        }
+        
+        .preview-label {
+          min-width: 100px;
+          font-size: 14px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.8rem;
+        }
+        
+        .container {
+          padding: 20px;
+        }
+        
+        .button-group {
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .btn {
+          width: 100%;
+          max-width: 250px;
+        }
+        
+        .preview-item {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .preview-label {
+          min-width: auto;
+        }
+      }
+      
+      .size-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      
+      .size-btn {
+        padding: 8px 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        min-width: 50px;
+      }
+      
+      .size-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      
+      .size-btn.active {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
     </style>
   </head>
   <body>
-    <div>
-      Text: <input id="inputChangeTitle" /> 
-      FontSize: <input id="inputChangeFontSize" type="number" min='10' max='1000' step="10" value="333" /> 
-      ShowBody: <input type="checkbox" id="checkDisplayBody" />
-      <input type="button" id="buttonUpdate" value="Update" />
+    <div class="app">
+      <div class="container">
+        <div class="header">
+          <h1>📝 Title & Body Changer</h1>
+          <p>브라우저 제목과 화면 내용을 마음대로 변경하세요</p>
+        </div>
+        
+        <div class="form-section">
+          <div class="form-group">
+            <label for="inputChangeTitle">📝 변경할 텍스트</label>
+            <div class="input-wrapper">
+              <input id="inputChangeTitle" type="text" placeholder="원하는 텍스트를 입력하세요..." />
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="inputChangeFontSize">📏 폰트 크기</label>
+            <div class="input-wrapper">
+              <input id="inputChangeFontSize" type="number" min='20' max='500' step="10" value="222" />
+              <span class="unit">px</span>
+            </div>
+            <div class="size-buttons">
+              <button type="button" class="size-btn" onclick="setFontSizeQuick(55)">55</button>
+              <button type="button" class="size-btn" onclick="setFontSizeQuick(111)">111</button>
+              <button type="button" class="size-btn" onclick="setFontSizeQuick(222)">222</button>
+              <button type="button" class="size-btn" onclick="setFontSizeQuick(333)">333</button>
+            </div>
+          </div>
+          
+          <div class="checkbox-group" onclick="toggleCheckbox()">
+            <input type="checkbox" id="checkDisplayBody" />
+            <label for="checkDisplayBody">🖥️ 화면에 텍스트 표시하기</label>
+          </div>
+          
+          <div class="checkbox-group" onclick="toggleLineBreakCheckbox()">
+            <input type="checkbox" id="checkNoLineBreak" checked />
+            <label for="checkNoLineBreak">📐 줄바꿈 방지 (한 줄로 표시)</label>
+          </div>
+          
+          <div class="button-group">
+            <button id="buttonUpdate" class="btn btn-primary">✨ 적용하기</button>
+            <button id="buttonReset" class="btn btn-secondary">🔄 초기화</button>
+            <button id="buttonGuide" class="btn btn-info">📖 사용방법</button>
+          </div>
+        </div>
+        
+        <div class="preview-section">
+          <h3>👀 실시간 미리보기</h3>
+          <div class="preview-item">
+            <span class="preview-label">🌐 브라우저 제목:</span>
+            <span class="preview-value" id="previewTitle">Title & Body Changer</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">🖥️ 화면 표시:</span>
+            <span class="preview-value" id="previewBody">비활성화됨</span>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <div id="content" />
+    <div id="content"></div>
     
     <script>
       var inputChangeTitle = document.querySelector("#inputChangeTitle");
       var inputChangeFontSize = document.querySelector("#inputChangeFontSize");
+      var checkDisplayBody = document.querySelector("#checkDisplayBody");
+      var checkNoLineBreak = document.querySelector("#checkNoLineBreak");
+      var buttonUpdate = document.querySelector("#buttonUpdate");
+      var buttonReset = document.querySelector("#buttonReset");
+      var buttonGuide = document.querySelector("#buttonGuide");
+      var previewTitle = document.querySelector("#previewTitle");
+      var previewBody = document.querySelector("#previewBody");
+      
+      // 체크박스 토글 함수
+      function toggleCheckbox() {
+        checkDisplayBody.checked = !checkDisplayBody.checked;
+        checkDisplayBodyChangeHandler();
+      }
+      
+      function toggleLineBreakCheckbox() {
+        checkNoLineBreak.checked = !checkNoLineBreak.checked;
+        checkNoLineBreakChangeHandler();
+      }
+      
+      // 이벤트 리스너 등록
+      inputChangeTitle.addEventListener('input', updatePreview);
       inputChangeTitle.addEventListener('change', inputChangeTitleChangeHandler);
       inputChangeTitle.addEventListener('keydown', inputChangeTitleKeyDownHandler);
-      // inputChangeFontSize.addEventListener('change', inputChangeFontSizeChangeHandler);
-      // inputChangeFontSize.addEventListener('keydown', inputChangeFontSizeKeyDownHandler);
-
-      var checkDisplayBody = document.querySelector("#checkDisplayBody");
+      inputChangeFontSize.addEventListener('input', function() {
+        updatePreview();
+        updateSizeButtonsActive();
+      });
       checkDisplayBody.addEventListener('change', checkDisplayBodyChangeHandler);
-
-      var buttonUpdate = document.querySelector("#buttonUpdate");
+      checkNoLineBreak.addEventListener('change', checkNoLineBreakChangeHandler);
       buttonUpdate.addEventListener('click', buttonUpdateClickHandler);
-      buttonUpdate.addEventListener('enter', buttonUpdateEnterHandler);
+      buttonReset.addEventListener('click', buttonResetClickHandler);
+      buttonGuide.addEventListener('click', buttonGuideClickHandler);
 
       function inputChangeTitleChangeHandler(event) {
         updateValue();
@@ -54,42 +637,81 @@
         }
       }
 
-      // function inputChangeFontSizeChangeHandler(event) {
-      //   updateValue();
-      // }
-      // function inputChangeFontSizeKeyDownHandler(event) {
-      //   var KEY = {ENTER: 13};
-      //   var which = event.which || event.keyCode;
-      //   if ( which == KEY.ENTER ) {
-      //     updateValue();
-      //   }
-      // }
-
       function checkDisplayBodyChangeHandler(event) {
-        // alert(checkDisplayBody.checked)
-        updateValue();
+        updatePreview();
+        if (checkDisplayBody.checked) {
+          updateValue();
+        } else {
+          // 체크박스 해제 시 화면에서 텍스트 제거 및 블러 효과 제거
+          setBodyText('');
+          elText.classList.remove('active');
+          // URL에서 show_body 파라미터 제거
+          var currentText = getText();
+          if (currentText) {
+            var newUrl = getUrl() + "?text=" + encodeURIComponent(currentText);
+            history.replaceState(null, '', newUrl);
+            document.title = currentText || 'Title & Body Changer';
+          } else {
+            history.replaceState(null, '', getUrl());
+            document.title = 'Title & Body Changer';
+          }
+        }
+      }
+
+      function checkNoLineBreakChangeHandler(event) {
+        updatePreview();
+        if (checkDisplayBody.checked) {
+          updateValue();
+        }
       }
 
       function buttonUpdateClickHandler(event) {
         updateValue();
       }
-      function buttonUpdateEnterHandler(event) {
-        updateValue();
+      
+      function buttonResetClickHandler(event) {
+        inputChangeTitle.value = '';
+        inputChangeFontSize.value = 222;
+        checkDisplayBody.checked = false;
+        checkNoLineBreak.checked = true;
+        document.title = 'Title & Body Changer';
+        setBodyText('');
+        elText.classList.remove('active');
+        updatePreview();
+        updateSizeButtonsActive();
+        history.replaceState(null, '', getUrl());
       }
       
+      function buttonGuideClickHandler(event) {
+        window.open('./guide.html', '_blank');
+      }
+      
+      function updatePreview() {
+        var title = getText() || 'Title & Body Changer';
+        previewTitle.textContent = title;
+        
+        if (checkDisplayBody.checked) {
+          var lineBreakStatus = checkNoLineBreak.checked ? '줄바꿈 방지' : '자동 줄바꿈';
+          previewBody.innerHTML = '"' + (getText() || '텍스트 없음') + '" (' + getFontSize() + 'px, ' + lineBreakStatus + ')';
+        } else {
+          previewBody.innerHTML = '비활성화됨 (체크박스를 선택하여 활성화)';
+        }
+      }
       
       // Move to url 
       function updateValue() {
         var params = [];
 
-        var paramText = "text=" + getText();
+        var paramText = "text=" + encodeURIComponent(getText());
         var paramFontSize = "font_size=" + getFontSize();
+        var paramNoLineBreak = "no_line_break=" + checkNoLineBreak.checked;
 
         var showBody = checkDisplayBody.checked;
         var paramShowBody = 'show_body=' + showBody;
         if ( showBody ) {
           params.push(paramShowBody);
           params.push(paramFontSize);
+          params.push(paramNoLineBreak);
         }
         params.push(paramText);
         
@@ -103,34 +725,83 @@
         return inputChangeFontSize.value;
       }
       
-      
       // Initialize
       var elText = document.querySelector("#content");
-      // setDomInnerHtml( inputChangeTitle, "Change Your title" );
-      // setFontSize(getFontSize());
 
       var params = getParamsFromUrl();
       if ( params ) {
-        // alert(params)
-        var text = params.text;
+        var text = decodeURIComponent(params.text || '');
         setTitleText(text);
-        setDomInnerHtml( inputChangeTitle, text );
-        
+        inputChangeTitle.value = text;
         
         var showBody = params.show_body === 'true';
         if ( showBody ) {
-          var fontSize = params.font_size;
+          var fontSize = params.font_size || 222;
+          var noLineBreak = params.no_line_break !== 'false';
           setFontSize(fontSize);
-          setDomInnerHtml( inputChangeFontSize, fontSize  );
-
+          setNoLineBreak(noLineBreak);
+          inputChangeFontSize.value = fontSize;
           checkDisplayBody.checked = true;
+          checkNoLineBreak.checked = noLineBreak;
         }
         setShowBody(showBody)
       }
       
+      // 초기 미리보기 업데이트
+      updatePreview();
+      updateSizeButtonsActive();
+      
+      // 포커스 설정
       setTimeout(function() {
         inputChangeTitle.focus();
-      }, 10);
+      }, 100);
+      
+      // 키보드 단축키 지원
+      document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey || event.metaKey) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            buttonUpdateClickHandler();
+          }
+          if (event.key === 'r') {
+            event.preventDefault();
+            buttonResetClickHandler();
+          }
+        }
+        
+        // 숫자 키로 빠른 크기 변경 (1,2,3,4)
+        if (event.key >= '1' && event.key <= '4' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          var target = event.target;
+          if (target.tagName !== 'INPUT') {
+            event.preventDefault();
+            var sizes = [55, 111, 222, 333];
+            var index = parseInt(event.key) - 1;
+            setFontSizeQuick(sizes[index]);
+          }
+        }
+      });
+      
+      function setFontSizeQuick(size) {
+        inputChangeFontSize.value = size;
+        updateSizeButtonsActive();
+        updatePreview();
+        if (checkDisplayBody.checked) {
+          updateValue();
+        }
+      }
+      
+      function updateSizeButtonsActive() {
+        var currentSize = parseInt(getFontSize());
+        var buttons = document.querySelectorAll('.size-btn');
+        buttons.forEach(function(btn) {
+          var btnSize = parseInt(btn.textContent);
+          if (btnSize === currentSize) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
       
       function getUrl() {
         var url = location.origin + location.pathname;
@@ -146,20 +817,17 @@
         return null;
       }
       
-      
-      
-      
-
-      
-      
-      function setDomInnerHtml(dom, text) {
-        dom.value = text;
-      }
       function setTitleText(text) {
         document.title = text;
       }
       function setBodyText(text) {
-        elText.innerHTML = text;
+        if (text) {
+          elText.innerHTML = '<div class="text-display">' + text + '</div>';
+          elText.classList.add('active');
+        } else {
+          elText.innerHTML = '';
+          elText.classList.remove('active');
+        }
       }
       function setShowBody(visible) {
         if ( visible ) {
@@ -169,9 +837,14 @@
         }
       }
       function setFontSize(fontSize) {
-        // alert(fontSize)
-        // alert(fontSize + 'pt;')
-        elText.style.fontSize = fontSize + 'pt'
+        elText.style.fontSize = fontSize + 'px'
+      }
+      function setNoLineBreak(noLineBreak) {
+        if (noLineBreak) {
+          elText.style.whiteSpace = 'nowrap';
+        } else {
+          elText.style.whiteSpace = 'normal';
+        }
       }
     </script>
   </body>
