@@ -1,62 +1,803 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Awake Screen (Video)</title>  
+    <title>Always Wake Screen</title>
+    <meta name="description" content="Keep your screen awake with beautiful animated video">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link id="favicon" rel="icon" type="image/x-icon" href="../../assets/exafe-logo-114.ico" />
+    <link rel="shortcut icon" href="../../assets/exafe-logo-114.png" />    
+    <link rel="apple-touch-icon" href="../../assets/exafe-logo-72.png" />
     <style>
-      html, body {
+      * {
         margin: 0;
         padding: 0;
-        overflow: hidden;
-        background-color: gray;
+        box-sizing: border-box;
       }
+      
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        cursor: none;
+      }
+      
+      .app {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        background: linear-gradient(135deg, 
+          #667eea 0%, 
+          #764ba2 25%, 
+          #f093fb 50%, 
+          #f5576c 75%, 
+          #4facfe 100%);
+        background-size: 300% 300%;
+        animation: gradientShift 20s ease infinite;
+      }
+      
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      .video-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
       canvas {
         width: 100vw;
         height: 100vh;
         position: absolute;
+        top: 0;
+        left: 0;
         display: none;
+        object-fit: cover;
       }
+      
       video {
         width: 100vw;
-/*         height: 100vw; */
+        height: 100vh;
         position: absolute;
+        top: 0;
+        left: 0;
+        object-fit: cover;
+        opacity: 0.8;
+      }
+      
+      .welcome-screen {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        z-index: 100;
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.25) 0%, 
+          rgba(255, 255, 255, 0.1) 100%);
+        padding: 50px 60px;
+        border-radius: 25px;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 
+          0 20px 60px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        animation: welcomeFloat 3s ease infinite;
+      }
+      
+      @keyframes welcomeFloat {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); }
+        50% { transform: translate(-50%, -50%) scale(1.02); }
+      }
+      
+      .welcome-screen h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        background: linear-gradient(45deg, #fff, #f0f0f0, #fff);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleShine 3s ease-in-out infinite;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      
+      .welcome-screen p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      @keyframes titleShine {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      .welcome-button {
+        padding: 18px 40px;
+        border: none;
+        border-radius: 25px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .welcome-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+          transparent, 
+          rgba(255, 255, 255, 0.3), 
+          transparent);
+        transition: left 0.5s ease;
+      }
+      
+      .welcome-button:hover::before {
+        left: 100%;
+      }
+      
+      .welcome-button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 
+          0 10px 30px rgba(0, 0, 0, 0.2),
+          0 0 25px rgba(255, 255, 255, 0.1);
+      }
+      
+      .floating-controls {
+        position: fixed;
+        top: 30px;
+        left: 30px;
+        display: flex;
+        gap: 15px;
+        z-index: 1000;
+        opacity: 0;
+        transition: all 0.5s ease;
+        transform: translateY(-10px);
+      }
+      
+      .floating-controls.show {
+        opacity: 0.8;
+        transform: translateY(0);
+      }
+      
+      .floating-controls:hover {
+        opacity: 1;
+      }
+      
+      .control-btn {
+        width: 60px;
+        height: 60px;
+        border: none;
+        border-radius: 20px;
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.25) 0%, 
+          rgba(255, 255, 255, 0.1) 100%);
+        color: white;
+        cursor: pointer;
+        font-size: 20px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(15px);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      .control-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+          transparent, 
+          rgba(255, 255, 255, 0.3), 
+          transparent);
+        transition: left 0.5s ease;
+      }
+      
+      .control-btn:hover::before {
+        left: 100%;
+      }
+      
+      .control-btn:hover {
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.35) 0%, 
+          rgba(255, 255, 255, 0.2) 100%);
+        transform: translateY(-3px) scale(1.1);
+        box-shadow: 
+          0 12px 35px rgba(0, 0, 0, 0.2),
+          0 0 25px rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+      
+      .control-btn:active {
+        transform: translateY(-1px) scale(1.05);
+      }
+      
+      .info-panel {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.25) 0%, 
+          rgba(255, 255, 255, 0.1) 100%);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 20px;
+        font-size: 15px;
+        z-index: 1000;
+        opacity: 0;
+        transition: all 0.5s ease;
+        transform: translateY(10px);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 
+          0 15px 35px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        min-width: 200px;
+      }
+      
+      .info-panel.show {
+        opacity: 0.8;
+        transform: translateY(0);
+      }
+      
+      .info-panel:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+        box-shadow: 
+          0 20px 45px rgba(0, 0, 0, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      }
+      
+      .info-panel p {
+        margin: 0 0 8px 0;
+        font-weight: 500;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      
+      .info-panel p:last-child {
+        margin-bottom: 0;
+      }
+      
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+      
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #27ae60;
+        animation: statusPulse 2s infinite;
+      }
+      
+      @keyframes statusPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.2); }
+      }
+      
+      .timer-display {
+        font-family: 'SF Mono', Monaco, 'Consolas', monospace;
+        font-size: 16px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 15px;
+        border-radius: 12px;
+        margin-top: 10px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .hidden {
+        display: none !important;
+      }
+      
+      .fade-in {
+        animation: fadeIn 1s ease forwards;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      
+      .cursor-visible {
+        cursor: default !important;
+      }
+      
+      .cursor-visible * {
+        cursor: default !important;
+      }
+      
+      @media (prefers-color-scheme: dark) {
+        .app {
+          background: linear-gradient(135deg, 
+            #1a1a2e 0%, 
+            #16213e 25%, 
+            #0f3460 50%, 
+            #533483 75%, 
+            #7209b7 100%);
+          background-size: 300% 300%;
+          animation: gradientShift 25s ease infinite;
+        }
+        
+        .welcome-screen {
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15) 0%, 
+            rgba(255, 255, 255, 0.05) 100%);
+        }
+        
+        .floating-controls .control-btn,
+        .info-panel {
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15) 0%, 
+            rgba(255, 255, 255, 0.05) 100%);
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+        
+        .floating-controls .control-btn:hover {
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.25) 0%, 
+            rgba(255, 255, 255, 0.1) 100%);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .welcome-screen {
+          padding: 40px 50px;
+          max-width: 90vw;
+        }
+        
+        .welcome-screen h1 {
+          font-size: 2.5rem;
+        }
+        
+        .welcome-screen p {
+          font-size: 1.1rem;
+        }
+        
+        .floating-controls {
+          top: 20px;
+          left: 20px;
+          gap: 12px;
+        }
+        
+        .control-btn {
+          width: 50px;
+          height: 50px;
+          font-size: 18px;
+        }
+        
+        .info-panel {
+          bottom: 20px;
+          right: 20px;
+          padding: 20px 25px;
+          font-size: 14px;
+          min-width: 180px;
+        }
+        
+        .timer-display {
+          font-size: 14px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .welcome-screen {
+          padding: 30px 40px;
+        }
+        
+        .welcome-screen h1 {
+          font-size: 2rem;
+        }
+        
+        .welcome-screen p {
+          font-size: 1rem;
+        }
+        
+        .floating-controls {
+          gap: 10px;
+        }
+        
+        .control-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 16px;
+        }
+        
+        .info-panel {
+          padding: 15px 20px;
+          font-size: 13px;
+          min-width: 160px;
+        }
       }
     </style>
   </head>
   <body>
-    <video
-       id="screen"
-       width="100%" height="100%"
-      playsinline autoplay muted 
-    ></video>
-    <canvas></canvas>
+    <div class="app">
+      <div class="welcome-screen" id="welcomeScreen">
+        <h1>💤 Always Wake Screen</h1>
+        <p>화면 절전 모드를 방지하는 아름다운 애니메이션</p>
+        <button class="welcome-button" onclick="startScreenSaver()">
+          ✨ 화면 보호 시작하기
+        </button>
+      </div>
+      
+      <div class="video-container">
+        <video
+          id="screen"
+          width="100%" 
+          height="100%"
+          playsinline 
+          autoplay 
+          muted 
+          style="display: none;"
+        ></video>
+        <canvas id="canvas"></canvas>
+      </div>
+      
+      <div class="floating-controls" id="floatingControls">
+        <button class="control-btn" onclick="showGuide()" title="사용방법 보기">
+          📖
+        </button>
+        <button class="control-btn" onclick="togglePause()" title="일시정지/재생 (Space키)">
+          <span id="pauseIcon">⏸️</span>
+        </button>
+        <button class="control-btn" onclick="changeSpeed()" title="속도 변경 (S키)">
+          <span id="speedIcon">1x</span>
+        </button>
+        <button class="control-btn" onclick="toggleCursor()" title="마우스 커서 토글 (C키)">
+          <span id="cursorIcon">🖱️</span>
+        </button>
+        <button class="control-btn" onclick="toggleFullscreen()" title="전체화면 (F키)">
+          🔳
+        </button>
+      </div>
+      
+      <div class="info-panel" id="infoPanel">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>화면 보호 활성화</span>
+        </div>
+        <div class="timer-display" id="timer">실행 시간: 0분 0초</div>
+        <p style="font-size: 13px; opacity: 0.8; margin-top: 10px;">
+          Space: 일시정지 | S: 속도 | C: 커서 | F: 전체화면
+        </p>
+      </div>
+    </div>
+    
     <script>
-      window.onload = function() {
-        const video = document.getElementById('screen')
+      let video, canvas, ctx, timerEl, pauseIcon, speedIcon, cursorIcon;
+      let welcomeScreen, floatingControls, infoPanel;
+      let isPaused = false;
+      let isStarted = false;
+      let drawInterval;
+      let speed = 1000;
+      let startTime = Date.now();
+      let pausedTime = 0;
+      let lastPauseTime = 0;
+      let speeds = [500, 1000, 2000, 5000];
+      let currentSpeedIndex = 1;
+      let showCursorTimeout;
+      let cursorVisible = true;
+      let autoCursorHide = false;
+      
+      // DOM 요소 초기화
+      function initElements() {
+        video = document.getElementById('screen');
+        canvas = document.getElementById('canvas');
+        ctx = canvas.getContext('2d');
+        timerEl = document.getElementById('timer');
+        pauseIcon = document.getElementById('pauseIcon');
+        speedIcon = document.getElementById('speedIcon');
+        cursorIcon = document.getElementById('cursorIcon');
+        welcomeScreen = document.getElementById('welcomeScreen');
+        floatingControls = document.getElementById('floatingControls');
+        infoPanel = document.getElementById('infoPanel');
         
-        const canvas = document.querySelector('canvas')
-        const ctx = canvas.getContext('2d')
-        
-        function randomColor(fx) {
-          return Math.floor(Math.random() * 256 * fx)
-        }
-        function randomRgb() {
-          const n = 10
-          const rgb = 128 - Math.floor(Math.random() * n) - (n/2)
-          return `rgb(${rgb},${rgb},${rgb})`
-        }
-        function draw() {
-          ctx.fillStyle = randomRgb();
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        setInterval(draw, 1000)
-        
-        const stream = canvas.captureStream();
-        video.srcObject = stream;
-        
-        function refresh() {
-          window.location.reload();
-        }
-        setInterval(refresh, 1800000);
+        // 캔버스 크기 설정
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
+      
+      // 랜덤 색상 생성
+      function randomColor(fx) {
+        return Math.floor(Math.random() * 256 * fx);
+      }
+      
+      function randomRgb() {
+        const baseColor = 64; // 더 어두운 베이스 색상
+        const variation = 32; // 색상 변화 범위
+        const r = baseColor + Math.floor(Math.random() * variation);
+        const g = baseColor + Math.floor(Math.random() * variation);
+        const b = baseColor + Math.floor(Math.random() * variation);
+        return `rgb(${r},${g},${b})`;
+      }
+      
+      // 캔버스 그리기
+      function draw() {
+        // 그라데이션 배경 생성
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, randomRgb());
+        gradient.addColorStop(0.5, randomRgb());
+        gradient.addColorStop(1, randomRgb());
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 원형 패턴 추가
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(canvas.width, canvas.height) / 4;
+        
+        ctx.globalAlpha = 0.1;
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius + Math.sin(Date.now() / 1000) * 50, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      
+      // 그리기 시작
+      function startDrawing() {
+        if (drawInterval) clearInterval(drawInterval);
+        drawInterval = setInterval(draw, speed);
+      }
+      
+      // 그리기 중지
+      function stopDrawing() {
+        if (drawInterval) {
+          clearInterval(drawInterval);
+          drawInterval = null;
+        }
+      }
+      
+      // 타이머 업데이트
+      function updateTimer() {
+        if (!isStarted || isPaused) return;
+        
+        const elapsed = Date.now() - startTime - pausedTime;
+        const hours = Math.floor(elapsed / 3600000);
+        const minutes = Math.floor((elapsed % 3600000) / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        
+        if (hours > 0) {
+          timerEl.textContent = `실행 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
+        } else {
+          timerEl.textContent = `실행 시간: ${minutes}분 ${seconds}초`;
+        }
+      }
+      
+      // 스크린 세이버 시작
+      function startScreenSaver() {
+        isStarted = true;
+        startTime = Date.now();
+        pausedTime = 0;
+        
+        welcomeScreen.style.display = 'none';
+        canvas.style.display = 'block';
+        
+        // 애니메이션과 함께 컨트롤 표시
+        setTimeout(() => {
+          floatingControls.classList.add('show');
+          infoPanel.classList.add('show');
+        }, 500);
+        
+        startDrawing();
+        
+        const stream = canvas.captureStream(30);
+        video.srcObject = stream;
+        video.style.display = 'block';
+        
+        // 커서 초기 설정
+        updateCursorVisibility();
+      }
+      
+      // 커서 숨기기/보이기 관리
+      function hideCursorAfterDelay() {
+        if (!autoCursorHide) return;
+        clearTimeout(showCursorTimeout);
+        document.body.classList.remove('cursor-visible');
+        showCursorTimeout = setTimeout(() => {
+          document.body.classList.add('cursor-visible');
+        }, 5000);
+      }
+      
+      // 마우스 움직임 감지
+      function handleMouseMove() {
+        if (!isStarted || !autoCursorHide) return;
+        document.body.classList.add('cursor-visible');
+        hideCursorAfterDelay();
+      }
+      
+      // 커서 토글 함수
+      function updateCursorVisibility() {
+        if (cursorVisible) {
+          document.body.classList.add('cursor-visible');
+          document.body.style.cursor = 'default';
+        } else {
+          document.body.classList.remove('cursor-visible');
+          document.body.style.cursor = 'none';
+        }
+      }
+      
+      // 전역 함수들
+      window.showGuide = function() {
+        window.open('./guide.html', '_blank');
+      };
+      
+      window.togglePause = function() {
+        isPaused = !isPaused;
+        
+        if (isPaused) {
+          video.pause();
+          stopDrawing();
+          pauseIcon.textContent = '▶️';
+          lastPauseTime = Date.now();
+        } else {
+          video.play();
+          startDrawing();
+          pauseIcon.textContent = '⏸️';
+          pausedTime += Date.now() - lastPauseTime;
+        }
+      };
+      
+      window.changeSpeed = function() {
+        currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+        speed = speeds[currentSpeedIndex];
+        
+        const speedTexts = {
+          500: '2x',
+          1000: '1x',
+          2000: '0.5x',
+          5000: '0.2x'
+        };
+        speedIcon.textContent = speedTexts[speed];
+        
+        if (!isPaused) {
+          startDrawing();
+        }
+      };
+      
+      window.toggleFullscreen = function() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.log('전체화면 모드를 지원하지 않습니다.');
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      };
+      
+      window.toggleCursor = function() {
+        document.body.classList.add('cursor-visible');
+        cursorVisible = !cursorVisible;
+        updateCursorVisibility();
+        
+        if (cursorVisible) {
+          cursorIcon.textContent = '🖱️';
+          autoCursorHide = false;
+        } else {
+          cursorIcon.textContent = '👻';
+          autoCursorHide = true;
+          hideCursorAfterDelay();
+        }
+        
+        hideCursorAfterDelay();
+      };
+      
+      // 윈도우 리사이즈 처리
+      function handleResize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      // 초기화
+      function init() {
+        initElements();
+        
+        // 타이머 업데이트
+        setInterval(updateTimer, 1000);
+        
+        // 30분마다 새로고침 (메모리 누수 방지)
+        setInterval(() => {
+          if (isStarted) {
+            window.location.reload();
+          }
+        }, 1800000);
+        
+        // 이벤트 리스너 등록
+        document.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('resize', handleResize);
+        
+        // 키보드 단축키
+        document.addEventListener('keydown', function(event) {
+          if (!isStarted) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              startScreenSaver();
+            }
+            return;
+          }
+          
+          if (event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault();
+            togglePause();
+          }
+          if (event.key === 's' || event.key === 'S') {
+            event.preventDefault();
+            changeSpeed();
+          }
+          if (event.key === 'f' || event.key === 'F') {
+            event.preventDefault();
+            toggleFullscreen();
+          }
+          if (event.key === 'c' || event.key === 'C') {
+            event.preventDefault();
+            toggleCursor();
+          }
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            }
+          }
+        });
+        
+        // 전체화면 변경 감지
+        document.addEventListener('fullscreenchange', function() {
+          handleResize();
+        });
+        
+        // 페이지 가시성 변경 감지 (탭 전환 시)
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden && isStarted && !isPaused) {
+            // 탭이 숨겨질 때 일시정지하지 않음 (화면 보호 목적)
+          }
+        });
+      }
+      
+      // 페이지 로드 시 초기화
+      window.addEventListener('load', init);
+      
+      // 페이지 언로드 시 정리
+      window.addEventListener('beforeunload', function() {
+        stopDrawing();
+        if (video.srcObject) {
+          video.srcObject.getTracks().forEach(track => track.stop());
+        }
+      });
     </script>
   </body>
 </html>

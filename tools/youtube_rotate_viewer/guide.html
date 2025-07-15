@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>YouTube Rotate Viewer 사용방법 - ExaFE</title>
+    <meta name="description" content="YouTube Rotate Viewer 도구 사용방법 가이드">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link id="favicon" rel="icon" type="image/x-icon" href="../../assets/exafe-logo-114.ico" />
+    <link rel="shortcut icon" href="../../assets/exafe-logo-114.png" />    
+    <link rel="apple-touch-icon" href="../../assets/exafe-logo-72.png" />
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .feature-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-list ul {
+            margin-left: 20px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 8px;
+        }
+        
+        .demo-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .back-link {
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .back-link:hover {
+            background: #7f8c8d;
+        }
+        
+        .example-url {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .rotate-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .rotate-box {
+            width: 60px;
+            height: 40px;
+            background: #3498db;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .rotate-box.rotated {
+            transform: rotate(90deg);
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #3498db;
+        }
+        
+        .url-params {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .url-params table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .url-params th,
+        .url-params td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .url-params th {
+            background: #e9ecef;
+            font-weight: bold;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #e4e6ea;
+            }
+            
+            .container {
+                background: #2c3e50;
+                color: #ecf0f1;
+            }
+            
+            h1, h2 {
+                color: #ecf0f1;
+            }
+            
+            .feature-list {
+                background: #34495e;
+            }
+            
+            .example-url {
+                background: #27ae60;
+                color: white;
+            }
+            
+            .warning {
+                background: #f39c12;
+                color: #2c3e50;
+            }
+            
+            .url-params {
+                background: #34495e;
+                border-color: #4a5568;
+            }
+            
+            .url-params th {
+                background: #4a5568;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../" class="back-link">← 메인으로 돌아가기</a>
+        
+        <h1>🔄 YouTube Rotate Viewer 사용방법</h1>
+        
+        <div class="demo-section">
+            <h2>유튜브 가로 영상을 세로로 회전시켜 시청!</h2>
+            <p>세로 모니터나 세로 화면에서 유튜브 영상을 최적으로 시청하세요</p>
+            <div class="rotate-demo">
+                <div class="rotate-box">16:9</div>
+                <div class="arrow">→</div>
+                <div class="rotate-box rotated">16:9</div>
+            </div>
+            <a href="./" class="btn">지금 사용해보기</a>
+        </div>
+
+        <h2>📋 사용방법</h2>
+        <div class="feature-list">
+            <ol>
+                <li><strong>페이지 접속</strong>: YouTube Rotate Viewer 페이지에 접속합니다</li>
+                <li><strong>URL 입력</strong>: YouTube URL 입력란에 원하는 유튜브 영상 URL을 입력합니다</li>
+                <li><strong>적용</strong>: "적용" 버튼을 클릭하거나 Enter 키를 누릅니다</li>
+                <li><strong>회전</strong>: "R" 버튼을 클릭하여 영상을 90도씩 회전시킵니다</li>
+                <li><strong>크기 조절</strong>: URL 파라미터로 크기를 조절할 수 있습니다</li>
+            </ol>
+        </div>
+
+        <h2>✨ 주요 기능</h2>
+        <div class="feature-list">
+            <ul>
+                <li>🔄 <strong>영상 회전</strong>: 90도씩 회전하여 세로 화면에 최적화</li>
+                <li>📏 <strong>크기 조절</strong>: 다양한 화면 크기에 맞춘 조절</li>
+                <li>🎬 <strong>다양한 URL 지원</strong>: 일반 URL, 단축 URL, 임베드 URL 모두 지원</li>
+                <li>⌨️ <strong>키보드 지원</strong>: Enter 키로 빠른 적용</li>
+                <li>🛡️ <strong>에러 처리</strong>: 잘못된 URL 입력 시 친절한 안내</li>
+                <li>🌙 <strong>다크 모드</strong>: 자동 다크 모드 지원</li>
+            </ul>
+        </div>
+
+        <h2>🎯 지원하는 YouTube URL 형식</h2>
+        <div class="feature-list">
+            <ul>
+                            <li><strong>일반 URL</strong>: https://www.youtube.com/watch?v=KZAKBnyvnlw</li>
+            <li><strong>단축 URL</strong>: https://youtu.be/KZAKBnyvnlw</li>
+            <li><strong>임베드 URL</strong>: https://www.youtube.com/embed/KZAKBnyvnlw</li>
+            <li><strong>파라미터 포함</strong>: https://www.youtube.com/watch?v=KZAKBnyvnlw&t=30s</li>
+            </ul>
+        </div>
+
+        <h2>📐 URL 파라미터 사용법</h2>
+        <div class="url-params">
+            <table>
+                <thead>
+                    <tr>
+                        <th>파라미터</th>
+                        <th>설명</th>
+                        <th>예시</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>r</strong></td>
+                        <td>회전 각도 (u=0°, r=90°, d=180°, l=270°)</td>
+                        <td>?r=r (90도 회전)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>s</strong></td>
+                        <td>영상 크기 (픽셀 단위)</td>
+                        <td>?s=800 (800px 크기)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>u</strong></td>
+                        <td>YouTube 영상 ID</td>
+                        <td>?u=dQw4w9WgXcQ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>🎯 사용 예시</h2>
+        
+        <h3>1. 기본 사용</h3>
+        <div class="feature-list">
+            <p><strong>입력:</strong> https://youtu.be/KZAKBnyvnlw</p>
+            <p><strong>결과:</strong> 해당 영상이 로드되고 "R" 버튼으로 회전 가능</p>
+        </div>
+
+        <h3>2. 파라미터를 사용한 고급 설정</h3>
+        <div class="feature-list">
+            <p><strong>URL:</strong> 90도 회전된 800px 크기 영상</p>
+            <div class="example-url">
+                localhost:8000/tools/youtube_rotate_viewer/?r=r&s=800&u=dQw4w9WgXcQ
+            </div>
+        </div>
+
+        <h3>3. 다양한 회전 각도</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>?r=u</strong>: 0도 (기본)</li>
+                <li><strong>?r=r</strong>: 90도 회전 (오른쪽)</li>
+                <li><strong>?r=d</strong>: 180도 회전 (뒤집기)</li>
+                <li><strong>?r=l</strong>: 270도 회전 (왼쪽)</li>
+            </ul>
+        </div>
+
+        <h2>💡 활용 팁</h2>
+        <div class="feature-list">
+            <ul>
+                <li><strong>세로 모니터</strong>: 세로 모니터에서 유튜브 영상을 풀스크린으로 시청</li>
+                <li><strong>모바일 세로 모드</strong>: 세로 모드에서 가로 영상을 편안하게 시청</li>
+                <li><strong>특수 화면</strong>: 회전된 화면이나 특수한 디스플레이에서 사용</li>
+                <li><strong>교육 목적</strong>: 프레젠테이션이나 강의에서 화면 회전 필요 시</li>
+                <li><strong>북마크 활용</strong>: 자주 사용하는 설정은 URL로 북마크</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ 주의사항</h2>
+        <div class="warning">
+            <ul>
+                <li>YouTube의 정책에 따라 일부 영상은 임베드가 제한될 수 있습니다</li>
+                <li>너무 큰 크기 설정 시 화면을 벗어날 수 있습니다</li>
+                <li>회전 시 비율이 유지되므로 화면 크기를 고려하세요</li>
+                <li>인터넷 연결이 필요하며, YouTube 서버 상태에 의존합니다</li>
+            </ul>
+        </div>
+
+        <h2>🔧 기술 정보</h2>
+        <div class="feature-list">
+            <ul>
+                <li><strong>iframe 사용</strong>: YouTube 임베드 API를 활용</li>
+                <li><strong>CSS Transform</strong>: CSS3 transform을 이용한 회전</li>
+                <li><strong>URL 파싱</strong>: 다양한 YouTube URL 형식 자동 인식</li>
+                <li><strong>반응형 계산</strong>: 회전 시 크기 자동 조절</li>
+                <li><strong>에러 핸들링</strong>: 잘못된 URL 입력 시 사용자 친화적 안내</li>
+            </ul>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🚀 지금 바로 사용해보세요!</h2>
+            <a href="./" class="btn">YouTube Rotate Viewer 실행하기</a>
+            <a href="./?r=r&s=600&u=KZAKBnyvnlw" class="btn">예제 확인하기</a>
+            <a href="../../" class="btn">다른 도구들 보기</a>
+        </div>
+    </div>
+</body>
+</html> 
