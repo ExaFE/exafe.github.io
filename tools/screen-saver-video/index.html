@@ -92,6 +92,7 @@
           0 20px 60px rgba(0, 0, 0, 0.1),
           inset 0 1px 0 rgba(255, 255, 255, 0.3);
         animation: welcomeFloat 3s ease infinite;
+        display: none; /* 처음부터 숨김 */
       }
       
       @keyframes welcomeFloat {
@@ -726,6 +727,9 @@
       // 초기화
       function init() {
         initElements();
+        
+        // 페이지 로드 즉시 화면 보호 시작
+        startScreenSaver();
         
         // 타이머 업데이트
         setInterval(updateTimer, 1000);
